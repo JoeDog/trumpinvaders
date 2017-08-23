@@ -40,7 +40,6 @@ public class Main  extends JPanel implements KeyListener {
     frame.setVisible(true);
   }
 
-  public void keyPressed(KeyEvent e) { }
   public void keyReleased(KeyEvent e) { }
   public void keyTyped(KeyEvent e) {
     if (e.getKeyChar() == 'j') {
@@ -54,6 +53,27 @@ public class Main  extends JPanel implements KeyListener {
     }
   }
  
+  public void keyPressed(KeyEvent e) { 
+    int key = e.getKeyCode();
+    switch (key) {
+      case KeyEvent.VK_UP:
+        break;
+      case KeyEvent.VK_DOWN:
+        break;
+      case KeyEvent.VK_LEFT:
+        control.move(Location.LEFT);
+        break;
+      case KeyEvent.VK_RIGHT:
+        control.move(Location.RIGHT);
+        break;
+      case KeyEvent.VK_SPACE:
+        control.shoot();
+        break;
+      default:
+        //System.out.println("KEY: "+key);
+        break;
+    }
+  }
   public static void main(String [] args) {
     if (control == null) {
       control = new Game();
