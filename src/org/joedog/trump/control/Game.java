@@ -12,7 +12,7 @@ public class Game extends AbstractController {
   private Engine engine;
   private Thread thread;
   private Arena  arena;
-  private int    sleep = 70;
+  private int    sleep = 22;
 
   public Game() {
     this.arena = Arena.getInstance(); 
@@ -59,8 +59,8 @@ public class Game extends AbstractController {
            long delta = System.currentTimeMillis() - prior;
            prior = System.currentTimeMillis();
            this.move(delta);
-           Sleep.milliseconds(10);
-           //Sleep.seconds(6);
+           //System.out.println("SLEEP: "+this.sleep);
+           Sleep.milliseconds(this.sleep);
            break;
       }
     }
@@ -83,7 +83,7 @@ public class Game extends AbstractController {
       if (a.getType() == Actor.ALIEN) {
         if (this.arena.isAtSideBorder(a.getLocation())) {
           drop = true;
-          this.sleep -= 10;
+          if (this.sleep > 10) this.sleep -= 1;
           break;
         }
       }
