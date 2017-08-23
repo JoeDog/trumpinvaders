@@ -30,7 +30,6 @@ public class Alien extends Actor {
   public void collide(Actor a) {
     if (a instanceof Missile) {
       this.remove = true;
-      System.out.println(this.points+" Points!");
     }
   }
 
