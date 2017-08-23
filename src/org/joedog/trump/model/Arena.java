@@ -73,7 +73,7 @@ public class Arena extends AbstractModel {
     this.aliens = 0;
     this.points = 0;
     this.base   = new Base();
-    this.base.setLocation(new Location(175, this.height-124));
+    this.base.setLocation(new Location(195, this.height-124));
     for (int row = 0; row < 5; row++) {
       for (int x = 0; x < 12; x++) {
         Actor alien = new Alien();
@@ -96,7 +96,7 @@ public class Arena extends AbstractModel {
     }
     for (int i = 1; i < 5; i++) {
       Actor shelter = new Shelter();
-      shelter.setLocation(i*180, 600);
+      shelter.setLocation(i*170, 600);
       this.actors.add(shelter);
     }
     this.actors.add(base);
