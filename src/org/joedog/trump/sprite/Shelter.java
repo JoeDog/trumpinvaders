@@ -6,7 +6,7 @@ import org.joedog.trump.model.Location;
 public class Shelter extends Actor {
   
   public Shelter() {
-    super("/org/joedog/trump/images/shelter.png");
+    super("/org/joedog/trump/images/wh.png");
     this.setName("Alien");
     this.setType(SHELTER);
     this.setSpeed(0);
