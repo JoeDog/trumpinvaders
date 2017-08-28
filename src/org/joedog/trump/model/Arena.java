@@ -38,6 +38,7 @@ public class Arena extends AbstractModel {
   private int    lives;
   private int    aliens;
   private int    points;
+  private int    status;
   private Actor  base; 
   private String message;
 
@@ -53,6 +54,7 @@ public class Arena extends AbstractModel {
     this.depth  = (this.height / this.csize);
     this.cols   = (this.width  / this.count);
     this.rows   = (this.height / this.count);
+    this.status = Constants.INIT;
   }
 
   public synchronized static Arena getInstance() {
@@ -70,6 +72,18 @@ public class Arena extends AbstractModel {
 
   public synchronized void newGame() {
     this.lives  = 3;
+    this.reset();
+  }
+
+  public synchronized void newBoard() {
+    this.lives -= 1;
+    if (this.lives > 0) {
+      this.actors.clear();
+      this.reset();
+    } // else game over
+  }
+
+  private void reset() {
     this.aliens = 0;
     this.points = 0;
     this.base   = new Base();
@@ -99,6 +113,12 @@ public class Arena extends AbstractModel {
       shelter.setLocation(i*170, 600);
       this.actors.add(shelter);
     }
+
+    for (int i = 0; i < this.lives-1; i++) {
+      Actor reserve = new Reserve();
+      reserve.setLocation(90+(i+1)*32, 710);
+      this.actors.add(reserve);
+    }
     this.actors.add(base);
   }
 
@@ -116,6 +136,18 @@ public class Arena extends AbstractModel {
 
   public synchronized int getPoints() {
     return this.points;
+  }
+
+  public synchronized int getLives() {
+    return this.lives;
+  }
+
+  public synchronized void setStatus(int status) {
+    this.status = status;
+  }
+
+  public int getStatus() {
+    return this.status;
   }
 
   public synchronized void go(int direction) {
