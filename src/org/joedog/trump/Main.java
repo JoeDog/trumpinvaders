@@ -69,6 +69,9 @@ public class Main  extends JPanel implements KeyListener {
       case KeyEvent.VK_SPACE:
         control.shoot();
         break;
+      case KeyEvent.VK_PAUSE:
+        control.pause();
+        break;
       default:
         //System.out.println("KEY: "+key);
         break;
