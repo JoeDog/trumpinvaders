@@ -17,9 +17,9 @@ public class Base extends Actor {
     int x = this.location.getX();
     int y = this.location.getY();
     if (this.getDirection() == Location.RIGHT) {
-      x += 6;
+      x += 8;
     } else {
-      x -= 6;
+      x -= 8;
     }
     this.setLocation(x, y);
   }

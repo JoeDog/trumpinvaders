@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.net.URL;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 import javax.swing.JPanel;
 import javax.imageio.ImageIO;
@@ -15,7 +17,7 @@ import javax.imageio.ImageIO;
 import org.joedog.trump.model.Location;
 import org.joedog.trump.model.AbstractModel;
 
-public abstract class Actor implements Scorable {
+public abstract class Actor {
   public static final int BASE    = 0;
   public static final int ALIEN   = 1;
   public static final int BOMB    = 2;
@@ -36,7 +38,7 @@ public abstract class Actor implements Scorable {
   protected double    strafe     = 1;
   protected double    angle      = 0.0;
   protected boolean   remove     = false;
-  private   BufferedImage image  = null;
+  protected BufferedImage image  = null;
 
   public Actor() {
 
@@ -51,11 +53,25 @@ public abstract class Actor implements Scorable {
     this.dh     = this.height;
   }
 
-  public Actor(int width, int height) {
-    this.width  = width;
-    this.dw     = width;
-    this.height = height;
-    this.dh     = height;
+  public Hashtable<String,String> getMask() {
+    int pixel;
+    int alpha;
+    Hashtable<String,String> mask = new Hashtable<String,String>();
+
+    for (int i = 0; i < image.getWidth(); i++){
+      for (int j = 0; j < image.getHeight(); j++) {
+        pixel = image.getRGB(i, j); // get the RGB value of the pixel
+        alpha = (pixel >> 24) & 0xff;
+        if (alpha != 0){ 
+          /**
+           * if the alpha is not 0, it must be
+           * something other than transparent
+           */
+          mask.put((this.getX()+i)+","+(this.getY()+j),"1"); // add the absolute x and absolute y coordinates to our set
+        }
+      }
+    }
+    return mask;
   }
 
   public void setType(int type) {
@@ -173,6 +189,11 @@ public abstract class Actor implements Scorable {
     return remove;
   }
 
+  @Override
+  public String toString() {
+    return this.name;
+  }
+
   /**
    * Scorable methods. Override at the subclass
    * if the object is actually scorable...
@@ -191,6 +212,11 @@ public abstract class Actor implements Scorable {
     y += Math.round((delta * this.strafe) / 1000);
     this.setLocation(x, y);
     //System.out.println("AFTER: "+this.location.toString()+" X: "+x+"Result : "+(delta * this.speed)  / 1000);
+  }
+
+  public boolean equals(Actor actor) {
+    if (this.type == actor.getType()) return true;
+    return false;
   }
 
   public abstract void move();
