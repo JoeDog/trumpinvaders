@@ -46,7 +46,7 @@ public class Game extends AbstractController {
   }
 
   public void start() {
-    int  status = Constants.INIT;
+    int  status = arena.getStatus();
     long prior  = System.currentTimeMillis();
 
     engine.start();
@@ -83,6 +83,9 @@ public class Game extends AbstractController {
     }
     for (Actor a : (ArrayList<Actor>)this.getModelProperty("Actors")) {
       if (a.remove()) {
+        if (a instanceof Base) {
+          arena.newBoard();
+        }
         this.arena.setPoints(a.getPoints());
         this.arena.remove(a);
       }
@@ -114,32 +117,6 @@ public class Game extends AbstractController {
     }
   }
 
-/*************************************************************
-  private void detectCollision(Actor actor) {
-    Rectangle bounds = actor.getBounds();
-
-    for (Actor a : (ArrayList<Actor>)this.getModelProperty("Actors")) {
-      if (a == null || actor.equals(a)) continue;
-      if (a.getType() == actor.getType()) continue;
-      //if (bounds.intersects(a.getBounds())) {
-        // we're in the neighborhood
-        HashSet<String> mask1 = actor.getMask();
-        HashSet<String> mask2 = a.getMask();
-        mask1.retainAll(mask2);
-        System.out.println("INSIDE RECT");
-        if (mask1.size() > 0) {
-          //System.out.println("COLLISION: "+mask1.size());
-          System.out.println(actor.toString()+" collided with a "+a.toString());
-          //System.out.println(mask1.toString());
-          actor.collide(a); 
-          a.collide(actor);
-        } else {
-          System.out.println("NO MATCH");
-        }
-      //}
-    }
-  }
-*************************************************************/
   private void detectCollision(Actor actor) {
     Rectangle bounds = actor.getBounds();
     for (Actor a : (ArrayList<Actor>)this.getModelProperty("Actors")) {
@@ -147,7 +124,10 @@ public class Game extends AbstractController {
       if (actor.getType() == Actor.BOMB && a.getType() == Actor.ALIEN) continue;
       if (bounds.intersects(a.getBounds())) {
         if (touches(actor, a)) {
-          System.out.println("Actor "+actor.getName()+" collided with "+a.getName()+" at "+actor.getLocation().toString()+" verified by "+a.getLocation().toString());  
+          //System.out.println (
+          //  "Actor "+actor.getName()+" collided with "+a.getName()+" at "+
+          //  actor.getLocation().toString()+" verified by "+a.getLocation().toString()
+          //);  
           actor.collide(a);
           a.collide(actor);
         }
@@ -162,63 +142,56 @@ public class Game extends AbstractController {
     int xshift = s2.getX()-s1.getX();
     int yshift = s2.getY()-s1.getY();
 
-    //Test if the Sprites overlap at all
-    if((xshift > 0 && xshift > s1.getWidth()) || (xshift < 0 && -xshift > s2.getWidth())) {
+    if ((xshift > 0 && xshift > s1.getWidth()) || (xshift < 0 && -xshift > s2.getWidth())) {
       return false;
     }
 
-    if((yshift > 0 && yshift > s1.getHeight()) || (yshift < 0 && -yshift > s2.getHeight())) {
+    if ((yshift > 0 && yshift > s1.getHeight()) || (yshift < 0 && -yshift > s2.getHeight())) {
       return false;
     }
 
-    //if they overlap, find out in which regions they do
     int leftx, rightx, topy, bottomy;
     int leftx2, topy2;
 
-    if(xshift >= 0) {
-      leftx = xshift;
+    if (xshift >= 0) {
+      leftx  = xshift;
       leftx2 = 0;
-
       rightx = Math.min(s1.getWidth(), s2.getWidth()+xshift);
     } else {
       rightx = Math.min(s1.getWidth(), s2.getWidth()+xshift);
-
-      leftx = 0;
+      leftx  = 0;
       leftx2 = -xshift;
     }
   
-    if(yshift >= 0) {
-        topy = yshift;
-        topy2 = 0;
-
-        bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
+    if (yshift >= 0) {
+      topy = yshift;
+      topy2 = 0;
+      bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
     } else {
-        bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
-
-        topy = 0;
-        topy2 = -yshift;
+      bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
+      topy    = 0;
+      topy2   = -yshift;
     }
-
-    //then compare the overlapping regions,
-    //if in any spot both pixels are not transparent, return true
 
     int ys = bottomy-topy;
     int xs = rightx-leftx;
 
-    for(int x=0; x<xs; x++) {
-        for(int y=0; y<ys; y++) {
-            int pxl1 = b1.getRGB(leftx+x, topy+y); 
-            int pxl2 = b2.getRGB(leftx2+x, topy2+y);
-            int aph1 = (pxl1 >> 24) & 0xff;
-            int aph2 = (pxl2 >> 24) & 0xff;
+    for (int x = 0; x < xs; x++) {
+      for (int y = 0; y < ys; y++) {
+        int pxl1 = b1.getRGB(leftx+x, topy+y); 
+        int pxl2 = b2.getRGB(leftx2+x, topy2+y);
+        int aph1 = (pxl1 >> 24) & 0xff;
+        int aph2 = (pxl2 >> 24) & 0xff;
 
-            if (aph1 != 0 && aph2 != 0) {
-              System.out.printf("NOT TRANSPARENT %d,%d (%d)  %d,%d (%d)\n", leftx+x, topy+y, aph1, leftx2+x, topy2+y, aph2);
-              return true;
-            }
+        if (aph1 != 0 && aph2 != 0) {
+          //System.out.printf(
+          //  "NOT TRANSPARENT %d,%d (%d)  %d,%d (%d)\n", 
+          //  leftx+x, topy+y, aph1, leftx2+x, topy2+y, aph2
+          //);
+          return true;
         }
+      }
     }
-    System.out.println("RETURNING FALSE!");
     return false;
   }
 }
