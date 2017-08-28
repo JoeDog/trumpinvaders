@@ -103,8 +103,8 @@ public class Arena extends AbstractModel {
   }
 
   public synchronized void shoot() {
-    int x = this.base.getX()+(this.base.getWidth()/2)-17;
-    int y = this.base.getY()+(this.base.getHeight()/2)-48;
+    int x = this.base.getX()+(this.base.getWidth()/2)-5;
+    int y = this.base.getY()+(this.base.getHeight()/2)-28;
     int d = this.base.getDirection();
     Missile m = new Missile(x, y);
     this.actors.add(m);
@@ -125,6 +125,10 @@ public class Arena extends AbstractModel {
 
   public void remove(Actor actor) {
     this.actors.remove(actor);
+  }
+
+  public void add(Actor actor) {
+    this.actors.add(actor);
   }
 
   public synchronized ArrayList<Actor> getActors() {
