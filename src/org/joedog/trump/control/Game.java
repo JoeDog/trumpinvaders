@@ -2,6 +2,7 @@ package org.joedog.trump.control;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 
 import org.joedog.util.*;
@@ -128,6 +129,9 @@ public class Game extends AbstractController {
           //  "Actor "+actor.getName()+" collided with "+a.getName()+" at "+
           //  actor.getLocation().toString()+" verified by "+a.getLocation().toString()
           //);  
+          if (actor.getType() == Actor.MISSILE && a.getType() == Actor.SHELTER) {
+            System.out.println("I shot the shelter (but I swear it was in self-defense.");
+          }
           actor.collide(a);
           a.collide(actor);
         }
@@ -135,63 +139,11 @@ public class Game extends AbstractController {
     }
   }
 
-  public static boolean touches(Actor s1, Actor s2) {
-    BufferedImage b1 = s1.getImage();
-    BufferedImage b2 = s2.getImage();
-
-    int xshift = s2.getX()-s1.getX();
-    int yshift = s2.getY()-s1.getY();
-
-    if ((xshift > 0 && xshift > s1.getWidth()) || (xshift < 0 && -xshift > s2.getWidth())) {
-      return false;
-    }
-
-    if ((yshift > 0 && yshift > s1.getHeight()) || (yshift < 0 && -yshift > s2.getHeight())) {
-      return false;
-    }
-
-    int leftx, rightx, topy, bottomy;
-    int leftx2, topy2;
-
-    if (xshift >= 0) {
-      leftx  = xshift;
-      leftx2 = 0;
-      rightx = Math.min(s1.getWidth(), s2.getWidth()+xshift);
-    } else {
-      rightx = Math.min(s1.getWidth(), s2.getWidth()+xshift);
-      leftx  = 0;
-      leftx2 = -xshift;
-    }
-  
-    if (yshift >= 0) {
-      topy = yshift;
-      topy2 = 0;
-      bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
-    } else {
-      bottomy = Math.min(s1.getHeight(), s2.getHeight()+yshift);
-      topy    = 0;
-      topy2   = -yshift;
-    }
-
-    int ys = bottomy-topy;
-    int xs = rightx-leftx;
-
-    for (int x = 0; x < xs; x++) {
-      for (int y = 0; y < ys; y++) {
-        int pxl1 = b1.getRGB(leftx+x, topy+y); 
-        int pxl2 = b2.getRGB(leftx2+x, topy2+y);
-        int aph1 = (pxl1 >> 24) & 0xff;
-        int aph2 = (pxl2 >> 24) & 0xff;
-
-        if (aph1 != 0 && aph2 != 0) {
-          //System.out.printf(
-          //  "NOT TRANSPARENT %d,%d (%d)  %d,%d (%d)\n", 
-          //  leftx+x, topy+y, aph1, leftx2+x, topy2+y, aph2
-          //);
-          return true;
-        }
-      }
-    }
-    return false;
+  private boolean touches(Actor a1, Actor a2) {
+    Area area1   = a1.getArea();
+    Area area2   = a2.getArea();
+    Area overlap = (Area)area1.clone();
+    overlap.intersect(area2);
+    return ! overlap.isEmpty();
   }
 }
