@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.net.URL;
@@ -183,6 +184,28 @@ public abstract class Actor {
 
   public Rectangle getBounds() {
     return new Rectangle(this.location.getX(),this.location.getY(),this.width, this.height);
+  }
+
+  public Area getArea() {
+    if (this.image==null) return null;
+    Area area = new Area();
+    for (int x = 0; x < this.image.getWidth(); x++) {
+      for (int y = 0; y < this.image.getHeight(); y++) {
+        if (isIncluded(x,y)) {
+          Rectangle r = new Rectangle(x,y,1,1);
+          area.add(new Area(r));
+        }
+      }
+    }
+    return area;
+  }
+
+  public boolean isIncluded(int x, int y) {
+    int pixel = this.image.getRGB(x,y);
+    if ((pixel>>24) == 0x00) {
+      return false;
+    }
+    return true;   
   }
 
   public boolean remove() {
